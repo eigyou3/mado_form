@@ -1001,18 +1001,24 @@ async function doSubmit() {
   };
 
   try {
+    // 修正ポイント: text/plainで送り、no-corsモードを徹底
     await fetch(GAS_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      mode: 'no-cors', 
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload)
     });
+
+    // 送信後の画面切り替え
     document.getElementById('step-nav').style.display = 'none';
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('done-wrap').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
   } catch(e) {
-    document.getElementById('err5').textContent = '送信に失敗しました。時間をおいて再度お試しください。';
-    document.getElementById('err5').classList.add('show');
+    console.error(e);
+    document.getElementById('err6').textContent = '送信エラーが発生しました。ネット接続を確認してください。';
+    document.getElementById('err6').classList.add('show');
     btn.disabled = false;
     btn.textContent = '送信する ✓';
   }
