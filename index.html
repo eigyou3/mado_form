@@ -311,6 +311,49 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.8; }
   .row2 { grid-template-columns: 1fr; }
   .row3 { grid-template-columns: 1fr 1fr; }
 }
+.fixed-privacy-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95); /* 背景をわずかに透かして馴染ませる */
+  border-top: 1px solid var(--border);
+  padding: 15px 20px;
+  text-align: center;
+  z-index: 2000;
+  backdrop-filter: blur(8px);
+}
+
+.fixed-privacy-footer p {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.fixed-privacy-footer a {
+  font-size: 10px;
+  color: var(--text-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.3s ease;
+}
+
+.fixed-privacy-footer a:hover {
+  color: var(--accent); /* ホバー時にアクセントカラー（オレンジ）に */
+}
+
+/* フッターと中身が重ならないようbodyの下に余白を作る */
+body {
+  padding-bottom: 80px; 
+}
+
+/* スマホ表示での微調整 */
+@media (max-width: 768px) {
+  .fixed-privacy-footer {
+    padding: 12px 15px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1024,5 +1067,11 @@ async function doSubmit() {
   }
 }
 </script>
+
+<div class="fixed-privacy-footer">
+  <p>― KOMAI HOME ―</p>
+  <a href="https://komai-home.co.jp/privacy-policy/" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+</div>
+
 </body>
 </html>
