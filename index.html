@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mado</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --border: #efefef;
+  --accent: #ff8c00;
+  --accent-light: #fff5e6;
+  --accent-mid: rgba(255,140,0,0.15);
+  --text: #2d2d2d;
+  --text-muted: #999;
+  --text-light: #bbb;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Progress bar ── */
+.progress-wrap {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 3px; background: var(--border);
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ff8c00, #ffb347);
+  transition: width 0.5s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── Layout ── */
+.wrapper { max-width: 520px; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+/* ── Header ── */
+.header {
+  text-align: center; margin-bottom: 3rem;
+  opacity: 0; animation: fadeUp 0.7s 0.1s ease forwards;
+}
+.brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem; font-weight: 300; letter-spacing: 0.04em;
+  color: var(--text); line-height: 1;
+  margin-bottom: 0.4rem;
+}
+.brand-sub {
+  font-size: 11px; letter-spacing: 0.3em;
+  color: var(--text-muted); display: block; margin-bottom: 1.5rem;
+}
+.header-note {
+  font-size: 12px; color: var(--text-muted); line-height: 2;
+}
+
+/* ── Step indicator ── */
+.step-nav {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 2.5rem;
+  opacity: 0; animation: fadeUp 0.7s 0.2s ease forwards;
+}
+.sn-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--text-light);
+  transition: all 0.35s ease; background: white;
+  flex-shrink: 0;
+}
+.sn-dot.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.sn-dot.done { border-color: var(--accent); background: var(--accent); color: white; }
+.sn-line {
+  width: 28px; height: 1.5px; background: var(--border);
+  transition: background 0.35s; flex-shrink: 0;
+}
+.sn-line.done { background: var(--accent); }
+
+/* ── Section ── */
+.section { display: none; }
+.section.active { display: block; animation: slideIn 0.45s ease; }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.sec-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 300;
+  margin-bottom: 0.25rem; color: var(--text);
+}
+.sec-sub {
+  font-size: 12px; color: var(--text-muted);
+  margin-bottom: 1.75rem; line-height: 1.8;
+}
+
+/* ── Fields ── */
+.field { margin-bottom: 1.4rem; }
+.field > label, .field-label {
+  display: block; font-size: 11px; font-weight: 500;
+  color: var(--text-muted); margin-bottom: 10px;
+  letter-spacing: 0.06em;
+}
+.req { color: var(--accent); margin-left: 3px; }
+input[type=text], input[type=email], input[type=tel],
+input[type=number], textarea, select {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-size: 14px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  -webkit-appearance: none;
+}
+input::placeholder, textarea::placeholder { color: #ccc; font-size: 13px; }
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+  background: white;
+  box-shadow: 0 0 0 4px var(--accent-light);
+}
+textarea { min-height: 100px; resize: vertical; line-height: 1.8; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+/* ── Checkbox / Radio cards ── */
+.choice-grid {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.choice-grid.inline {
+  flex-direction: row; flex-wrap: wrap; gap: 8px;
+}
+.choice-item {
+  position: relative;
+}
+.choice-item input[type=checkbox],
+.choice-item input[type=radio] {
+  position: absolute; opacity: 0; width: 0; height: 0;
+}
+.choice-label {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px; color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--surface);
+  user-select: none;
+}
+.choice-label:hover { border-color: rgba(255,140,0,0.35); background: white; }
+.choice-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0; transition: all 0.2s;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+}
+.choice-item input[type=checkbox] + .choice-label .choice-dot { border-radius: 5px; }
+.choice-item input:checked + .choice-label {
+  border-color: var(--accent); background: var(--accent-light);
+}
+.choice-item input:checked + .choice-label .choice-dot {
+  background: var(--accent); border-color: var(--accent);
+}
+.choice-item input:checked + .choice-label .choice-dot::after {
+  content: '✓'; color: white; font-size: 11px; font-weight: 600;
+}
+.choice-label.inline-label {
+  padding: 9px 14px;
+  font-size: 13px;
+}
+
+/* ── Sub-field (conditional) ── */
+.sub-field {
+  margin-top: 8px; margin-left: 28px;
+  padding: 12px 14px;
+  background: #fafafa;
+  border-left: 2px solid var(--accent-mid);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  display: none;
+}
+.sub-field.show { display: block; animation: fadeIn 0.3s ease; }
+.sub-field input, .sub-field select {
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.sub-label {
+  font-size: 11px; color: var(--text-muted);
+  margin-bottom: 6px; display: block;
+}
+
+/* ── Budget calculator ── */
+.budget-wrap { background: var(--surface); border-radius: var(--radius); padding: 1.25rem; border: 1.5px solid var(--border); }
+.budget-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 10px; }
+.budget-row:last-child { margin-bottom: 0; }
+.budget-field { flex: 1; }
+.budget-field label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px; }
+.budget-result {
+  margin-top: 12px; padding: 12px 16px;
+  background: var(--accent-light);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  border: 1px solid rgba(255,140,0,0.2);
+  display: none;
+}
+.budget-result.show { display: block; }
+.budget-result-label { font-size: 11px; color: var(--accent); letter-spacing: 0.06em; margin-bottom: 4px; }
+.budget-result-num { font-family: 'Noto Sans JP', sans-serif; font-size: 1.6rem; color: var(--accent); font-weight: 500; letter-spacing: 0.03em; }
+.budget-result-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ── Company list (HM) ── */
+.hm-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
+}
+@media (max-width: 400px) { .hm-grid { grid-template-columns: repeat(2, 1fr); } }
+.hm-item { position: relative; }
+.hm-item input { position: absolute; opacity: 0; width: 0; height: 0; }
+.hm-label {
+  display: block; padding: 9px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 11px; color: var(--text-muted);
+  text-align: center; cursor: pointer;
+  transition: all 0.2s; background: var(--surface);
+  line-height: 1.4;
+}
+.hm-label:hover { border-color: rgba(255,140,0,0.3); color: var(--text); }
+.hm-item input:checked + .hm-label {
+  border-color: var(--accent); background: var(--accent-light);
+  color: var(--accent); font-weight: 500;
+}
+
+/* ── Buttons ── */
+.btn-row { display: flex; gap: 10px; margin-top: 2rem; }
+.btn-back {
+  flex: 0 0 auto; padding: 15px 20px;
+  background: transparent; border: 1.5px solid var(--border);
+  border-radius: 50px; font-size: 13px;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: var(--text-muted); cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-back:hover { border-color: var(--text-muted); color: var(--text); }
+.btn-next {
+  flex: 1; padding: 16px;
+  background: var(--accent); color: white;
+  border: none; border-radius: 50px;
+  font-size: 14px; font-weight: 500; letter-spacing: 0.1em;
+  font-family: 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,140,0,0.25); }
+.btn-next:disabled { background: #ddd; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ── Error ── */
+.err { font-size: 12px; color: #e05555; margin-top: 6px; display: none; }
+.err.show { display: block; }
+
+/* ── Done screen ── */
+.done-wrap { display: none; text-align: center; padding: 3rem 0; animation: fadeUp 0.7s ease; }
+.done-circle {
+  width: 56px; height: 56px; border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem; font-size: 22px; color: var(--accent);
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,140,0,0.2); }
+  50%      { box-shadow: 0 0 0 12px rgba(255,140,0,0); }
+}
+.done-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem; font-weight: 300; margin-bottom: 1rem;
+}
+.done-sub { font-size: 13px; color: var(--text-muted); line-height: 2.2; }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%,75% { transform: translateX(-5px); }
+  50%     { transform: translateX(5px); }
+}
+.shake { animation: shake 0.35s ease; }
+
+/* ── Divider ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+@media (max-width: 400px) {
+  .row2 { grid-template-columns: 1fr; }
+  .row3 { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="prog" style="width:20%"></div></div>
+
+<div class="wrapper">
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">mado</div>
+    <p class="header-note">私たちが大切にしている『整う暮らし』のヒントをお届けします</p>
+  </div>
+
+  <!-- Step nav -->
+  <div class="step-nav" id="step-nav">
+    <div class="sn-dot active" id="sd1">1</div><div class="sn-line" id="sl1"></div>
+    <div class="sn-dot" id="sd2">2</div><div class="sn-line" id="sl2"></div>
+    <div class="sn-dot" id="sd3">3</div><div class="sn-line" id="sl3"></div>
+    <div class="sn-dot" id="sd4">4</div><div class="sn-line" id="sl4"></div>
+    <div class="sn-dot" id="sd5">5</div><div class="sn-line" id="sl5"></div>
+    <div class="sn-dot" id="sd6">6</div>
+  </div>
+
+  <!-- ====== STEP 1 ====== -->
+  <div class="section active" id="sec1">
+    <p class="sec-title">きっかけ</p>
+    <p class="sec-sub">こまいホームを知っていただいたきっかけを教えてください。</p>
+
+    <!-- Q1 きっかけ -->
+    <div class="field">
+      <span class="field-label">Q1. こまいホームを知ったきっかけ<span class="req">*</span></span>
+      <div class="choice-grid">
+        <div class="choice-item">
+          <input type="radio" name="source" id="src-paper" value="紙面（ライナーやななかまどなど）">
+          <label class="choice-label" for="src-paper"><span class="choice-dot"></span>紙面（ライナーやななかまどなど）</label>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="source" id="src-web" value="ホームページ">
+          <label class="choice-label" for="src-web"><span class="choice-dot"></span>ホームページ</label>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="source" id="src-fb" value="Facebook">
+          <label class="choice-label" for="src-fb"><span class="choice-dot"></span>Facebook</label>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="source" id="src-ig" value="Instagram">
+          <label class="choice-label" for="src-ig"><span class="choice-dot"></span>Instagram</label>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="source" id="src-walk" value="通りがかり">
+          <label class="choice-label" for="src-walk"><span class="choice-dot"></span>通りがかり</label>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="source" id="src-ref" value="ご紹介">
+          <label class="choice-label" for="src-ref"><span class="choice-dot"></span>ご紹介</label>
+        </div>
+      </div>
+      <div class="sub-field" id="sub-ref">
+        <span class="sub-label">ご紹介者のお名前</span>
+        <input type="text" id="ref-name" placeholder="例：山田 太郎 様">
+      </div>
+    </div>
+
+    <div class="err" id="err1">きっかけを選択してください。</div>
+    <div class="btn-row">
+      <button class="btn-next" onclick="next(1)">次へ →</button>
+    </div>
+    <div style="margin-top:10px">
+      <input type="text" id="admin-code" placeholder="" inputmode="email" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        oninput="this.value=this.value.replace(/[^a-zA-Z0-9]/g,'');checkAdmin(this.value)"
+        style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:6px 4px;font-size:12px;color:var(--text-muted);outline:none;transition:border-color 0.2s;ime-mode:disabled"
+        onfocus="this.style.borderBottomColor='var(--accent)'"
+        onblur="this.style.borderBottomColor='var(--border)'">
+    </div>
+  </div>
+
+  <!-- ====== STEP 2 ====== -->
+  <div class="section" id="sec2">
+    <p class="sec-title">ご家族と現在のお住まい</p>
+    <p class="sec-sub">ご家族の構成と、現在のお住まいについて教えてください。</p>
+
+    <!-- Q2 家族構成 -->
+    <div class="field">
+      <span class="field-label">Q2. 家族構成<span class="req">*</span></span>
+      <div class="row3">
+        <div>
+          <span class="sub-label">大人（名）</span>
+          <input type="number" id="fam-adult" min="1" max="10" placeholder="2">
+        </div>
+        <div>
+          <span class="sub-label">子供（名）</span>
+          <input type="number" id="fam-child" min="0" max="10" placeholder="0">
+        </div>
+        <div>
+          <span class="sub-label">ペット</span>
+          <input type="text" id="fam-pet" placeholder="犬1匹など">
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Q3 現在の住まい -->
+    <div class="field">
+      <span class="field-label">Q3. 現在のご住まい<span class="req">*</span></span>
+      <div class="choice-grid">
+        <div class="choice-item">
+          <input type="radio" name="current" id="cur-jikka" value="実家住まい">
+          <label class="choice-label" for="cur-jikka"><span class="choice-dot"></span>実家住まい</label>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="current" id="cur-owned" value="持ち家">
+          <label class="choice-label" for="cur-owned"><span class="choice-dot"></span>持ち家</label>
+          <div class="sub-field" id="sub-owned">
+            <div class="row2">
+              <div>
+                <span class="sub-label">築年数（年）</span>
+                <input type="number" id="owned-age" placeholder="15" min="0">
+              </div>
+              <div>
+                <span class="sub-label">住宅ローン月々（円）</span>
+                <input type="number" id="owned-loan" placeholder="80000" min="0">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="current" id="cur-rent" value="賃貸">
+          <label class="choice-label" for="cur-rent"><span class="choice-dot"></span>賃貸</label>
+          <div class="sub-field" id="sub-rent">
+            <div class="row2">
+              <div>
+                <span class="sub-label">居住期間（年）</span>
+                <input type="number" id="rent-years" placeholder="3" min="0">
+              </div>
+              <div>
+                <span class="sub-label">家賃月々（円）</span>
+                <input type="number" id="rent-fee" placeholder="65000" min="0">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="current" id="cur-corp" value="社宅">
+          <label class="choice-label" for="cur-corp"><span class="choice-dot"></span>社宅</label>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="err" id="err2">大人の人数と現在のお住まいを選択してください。</div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="back(2)">← 戻る</button>
+      <button class="btn-next" onclick="next(2)">次へ →</button>
+    </div>
+  </div>
+
+  <!-- ====== STEP 3: ご希望の建物 ====== -->
+  <div class="section" id="sec3">
+    <p class="sec-title">ご希望の建物</p>
+    <p class="sec-sub">今回のご希望についてお聞かせください。</p>
+
+    <div class="field">
+      <span class="field-label">Q4. ご希望の建物<span class="req">*</span></span>
+      <div class="choice-grid">
+        <div class="choice-item">
+          <input type="radio" name="btype" id="bt-new" value="新築">
+          <label class="choice-label" for="bt-new"><span class="choice-dot"></span>新築</label>
+          <div class="sub-field" id="sub-new">
+            <span class="sub-label">建物の種類</span>
+            <div class="choice-grid inline">
+              <div class="choice-item"><input type="checkbox" name="newtype" id="nt-flat" value="平屋"><label class="choice-label inline-label" for="nt-flat"><span class="choice-dot"></span>平屋</label></div>
+              <div class="choice-item"><input type="checkbox" name="newtype" id="nt-2f" value="2階建て"><label class="choice-label inline-label" for="nt-2f"><span class="choice-dot"></span>2階建て</label></div>
+              <div class="choice-item"><input type="checkbox" name="newtype" id="nt-2k" value="2世帯住宅"><label class="choice-label inline-label" for="nt-2k"><span class="choice-dot"></span>2世帯住宅</label></div>
+              <div class="choice-item"><input type="checkbox" name="newtype" id="nt-shop" value="店舗併用住宅"><label class="choice-label inline-label" for="nt-shop"><span class="choice-dot"></span>店舗併用</label></div>
+              <div class="choice-item"><input type="checkbox" name="newtype" id="nt-other" value="その他"><label class="choice-label inline-label" for="nt-other"><span class="choice-dot"></span>その他</label></div>
+            </div>
+            <div id="sub-nt-other" style="display:none;margin-top:8px">
+              <input type="text" id="newtype-other" placeholder="具体的にご記入ください">
+            </div>
+          </div>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="btype" id="bt-reform" value="リフォーム">
+          <label class="choice-label" for="bt-reform"><span class="choice-dot"></span>リフォーム</label>
+          <div class="sub-field" id="sub-reform">
+            <span class="sub-label">リフォームの種類</span>
+            <div class="choice-grid inline">
+              <div class="choice-item"><input type="checkbox" name="reformtype" id="rf-eizen" value="営繕"><label class="choice-label inline-label" for="rf-eizen"><span class="choice-dot"></span>営繕</label></div>
+              <div class="choice-item"><input type="checkbox" name="reformtype" id="rf-zokai" value="増改築"><label class="choice-label inline-label" for="rf-zokai"><span class="choice-dot"></span>増改築</label></div>
+              <div class="choice-item"><input type="checkbox" name="reformtype" id="rf-reno" value="リノベーション"><label class="choice-label inline-label" for="rf-reno"><span class="choice-dot"></span>リノベーション</label></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Q5 土地（新築のみ表示） -->
+    <div class="field" id="q5-wrap" style="display:none">
+      <span class="field-label">Q5. 土地について（新築の方）</span>
+      <div class="choice-grid">
+        <div class="choice-item">
+          <input type="radio" name="land" id="land-have" value="所有している土地がある">
+          <label class="choice-label" for="land-have"><span class="choice-dot"></span>所有している土地がある</label>
+          <div class="sub-field" id="sub-land-have">
+            <span class="sub-label">所在地（◯丁目まで）</span>
+            <input type="text" id="land-location" placeholder="例：旭川市◯◯条◯丁目">
+          </div>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="land" id="land-find" value="土地を探している">
+          <label class="choice-label" for="land-find"><span class="choice-dot"></span>土地を探している</label>
+          <div class="sub-field" id="sub-land-find">
+            <span class="sub-label">希望のエリア（校区などでも構いません）</span>
+            <input type="text" id="land-area" placeholder="例：◯◯小学校区、◯◯町など">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="err" id="err3">建物の種類を選択してください。</div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="back(3)">← 戻る</button>
+      <button class="btn-next" onclick="next(3)">次へ →</button>
+    </div>
+  </div>
+
+  <!-- ====== STEP 4: 総体的なご予算 ====== -->
+  <div class="section" id="sec4">
+    <p class="sec-title">総体的なご予算</p>
+    <p class="sec-sub">資金計画についてお聞かせください。</p>
+
+    <!-- Q6 予算 -->
+    <div class="field">
+      <span class="field-label">Q6. 総体的なご予算<span class="req">*</span></span>
+      <div class="budget-wrap">
+        <div class="budget-row">
+          <div class="budget-field">
+            <label>総額（万円）</label>
+            <input type="number" id="budget-total" placeholder="3000" min="100" oninput="calcLoan()">
+          </div>
+          <div class="budget-field">
+            <label>返済年数（1〜50年）</label>
+            <input type="number" id="budget-years" placeholder="35" min="1" max="50" oninput="calcLoan()">
+          </div>
+        </div>
+        <div class="budget-row">
+          <div class="budget-field">
+            <label>自己資金（万円、0でも可）</label>
+            <input type="number" id="budget-self" placeholder="300" min="0" oninput="calcLoan()">
+          </div>
+        </div>
+        <div class="budget-result" id="loan-result">
+          <div class="budget-result-label">月々のお支払い目安（金利1.03%）</div>
+          <div class="budget-result-num" id="loan-num">— 円</div>
+          <div class="budget-result-sub" id="loan-sub">借入額：— 万円</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 完成時期 -->
+    <div class="field">
+      <span class="field-label">Q7. 完成のご希望時期</span>
+      <input type="text" id="desired-time" placeholder="例：〇年以内、来年〇月頃など">
+    </div>
+
+    <div class="err" id="err4">ご予算の総額を入力してください。</div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="back(4)">← 戻る</button>
+      <button class="btn-next" onclick="next(4)">次へ →</button>
+    </div>
+  </div>
+
+  <!-- ====== STEP 5: 検討状況 ====== -->
+  <div class="section" id="sec5">
+    <p class="sec-title">検討状況</p>
+    <p class="sec-sub">他社のご検討状況についてお聞かせください。</p>
+
+    <!-- Q8 他社 -->
+    <div class="field">
+      <span class="field-label">Q8. 他に相談・見学したことのある会社（複数選択可）</span>
+      <div class="choice-grid" style="margin-bottom:10px">
+        <div class="choice-item">
+          <input type="radio" name="hm-status" id="hm-none" value="なし">
+          <label class="choice-label" for="hm-none"><span class="choice-dot"></span>なし</label>
+        </div>
+        <div class="choice-item">
+          <input type="radio" name="hm-status" id="hm-have" value="あり">
+          <label class="choice-label" for="hm-have"><span class="choice-dot"></span>あり（下から選択）</label>
+        </div>
+      </div>
+      <div id="hm-list" style="display:none">
+        <div class="hm-grid" id="hm-grid"></div>
+        <div style="margin-top:10px">
+          <span class="sub-label">その他（会社名を入力）</span>
+          <input type="text" id="hm-other" placeholder="会社名">
+        </div>
+      </div>
+    </div>
+
+    <div class="err" id="err5" style="display:none"></div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="back(5)">← 戻る</button>
+      <button class="btn-next" onclick="next(5)">次へ →</button>
+    </div>
+  </div>
+
+  <!-- ====== STEP 6: お客様情報・連絡先 ====== -->
+  <div class="section" id="sec6">
+    <p class="sec-title">お客様情報・連絡先</p>
+    <p class="sec-sub">ご連絡先と、差し支えのない範囲でお聞かせください。</p>
+
+    <!-- Q9 氏名 -->
+    <div class="field">
+      <span class="field-label">Q9. お名前<span class="req">*</span></span>
+      <div class="row2">
+        <div>
+          <span class="sub-label">苗字</span>
+          <input type="text" id="last-name" placeholder="こまい" autocomplete="family-name">
+        </div>
+        <div>
+          <span class="sub-label">名前</span>
+          <input type="text" id="first-name" placeholder="たろう" autocomplete="given-name">
+        </div>
+      </div>
+      <div class="row2" style="margin-top:10px">
+        <div>
+          <span class="sub-label">苗字（フリガナ）</span>
+          <input type="text" id="last-kana" placeholder="コマイ" oninput="this.value=toKatakana(this.value)">
+        </div>
+        <div>
+          <span class="sub-label">名前（フリガナ）</span>
+          <input type="text" id="first-kana" placeholder="タロウ" oninput="this.value=toKatakana(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Q10 年齢 -->
+    <div class="field">
+      <span class="field-label">Q10. 年齢<span class="req">*</span></span>
+      <input type="number" id="age" placeholder="35" min="18" max="99" style="max-width:120px">
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Q11 住所 -->
+    <div class="field">
+      <span class="field-label">Q11. ご住所<span class="req">*</span></span>
+      <div class="row2" style="margin-bottom:10px">
+        <div>
+          <span class="sub-label">郵便番号（ハイフンなし）</span>
+          <input type="tel" id="zip" placeholder="0780000" maxlength="7">
+        </div>
+        <div>
+          <span class="sub-label">都道府県</span>
+          <input type="text" id="pref" placeholder="北海道">
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <span class="sub-label">市区町村・番地</span>
+        <input type="text" id="address1" placeholder="旭川市◯◯条◯丁目◯番地">
+      </div>
+      <div>
+        <span class="sub-label">建物名・部屋番号</span>
+        <input type="text" id="address2" placeholder="◯◯マンション101号室">
+      </div>
+    </div>
+
+    <!-- Q12 電話 -->
+    <div class="field">
+      <span class="field-label">Q12. 電話番号（ハイフンなし）<span class="req">*</span></span>
+      <input type="tel" id="tel" placeholder="09000000000" autocomplete="tel">
+    </div>
+
+    <!-- Q13 メール -->
+    <div class="field">
+      <span class="field-label">Q13. メールアドレス<span class="req">*</span></span>
+      <input type="email" id="email" placeholder="example@email.com" autocomplete="email">
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Q14 業種 -->
+    <div class="field">
+      <span class="field-label">Q14. 業種（差し支えない範囲で）</span>
+      <input type="text" id="industry" placeholder="例：会社員、自営業、医療関係など">
+    </div>
+
+    <!-- Q15 世帯年収 -->
+    <div class="field">
+      <span class="field-label">Q15. 世帯年収（差し支えない範囲で）</span>
+      <div class="choice-grid">
+        <div class="choice-item"><input type="radio" name="income" id="inc1" value="400万円未満"><label class="choice-label" for="inc1"><span class="choice-dot"></span>400万円未満</label></div>
+        <div class="choice-item"><input type="radio" name="income" id="inc2" value="400〜500万円未満"><label class="choice-label" for="inc2"><span class="choice-dot"></span>400〜500万円未満</label></div>
+        <div class="choice-item"><input type="radio" name="income" id="inc3" value="500〜700万円未満"><label class="choice-label" for="inc3"><span class="choice-dot"></span>500〜700万円未満</label></div>
+        <div class="choice-item"><input type="radio" name="income" id="inc4" value="700万円以上"><label class="choice-label" for="inc4"><span class="choice-dot"></span>700万円以上</label></div>
+      </div>
+    </div>
+
+    <!-- Q16 自由記入 -->
+    <div class="field">
+      <span class="field-label">Q16. スタッフに聞きたいこと、伝えたいこと</span>
+      <textarea id="message" placeholder="ご自由にお書きください。"></textarea>
+    </div>
+
+    <div class="err" id="err6">必須項目（氏名・住所・電話番号・メール）をご入力ください。</div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="back(6)">← 戻る</button>
+      <button class="btn-next" id="submit-btn" onclick="doSubmit()">送信する ✓</button>
+    </div>
+  </div>
+
+  <!-- Done -->
+  <div class="done-wrap" id="done-wrap">
+    <div class="done-circle">✓</div>
+    <h2 class="done-title">ありがとうございます</h2>
+    <p class="done-sub">担当スタッフがご確認の上、<br>改めてご連絡させていただきます。<br><br>どうぞよろしくお願いいたします。</p>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+// ===== 設定 =====
+// ★ GASのデプロイURLをここに貼り付けてください
+const GAS_URL = "YOUR_GAS_URL_HERE";
+let adminMode = false;
+
+function checkAdmin(val) {
+  if (val === 'admin') {
+    adminMode = true;
+    document.getElementById('admin-code').style.borderBottomColor = 'var(--accent)';
+  }
+}
+
+// ひらがな→カタカナ変換
+function toKatakana(str) {
+  return str.replace(/[ぁ-ゖ]/g, c => String.fromCharCode(c.charCodeAt(0) + 0x60));
+}
+
+// 漢字入力時にフリガナ自動入力（IME compositionend を使用）
+function setupAutoKana(kanjiId, kanaId) {
+  const kanjiEl = document.getElementById(kanjiId);
+  const kanaEl = document.getElementById(kanaId);
+  kanjiEl.addEventListener('compositionend', function(e) {
+    // IME確定時のひらがなをカタカナに変換して入力
+    if (kanaEl.value === '') {
+      kanaEl.value = toKatakana(e.data || '');
+    }
+  });
+}
+
+// ハウスメーカーリスト（あいうえお順）
+const HM_LIST = [
+  "アーキテックプランニング","アイ工務店","旭栄大城建設","芦野組",
+  "石山工務店","イワクラホーム","SKCサワダ","家計画",
+  "小森工務店","カワムラホーム","クリエイトホームズ","坂下工務店",
+  "創樹","高嶋建業","高組","土屋ホーム",
+  "D+","道北振興","東成建設","東洋AP",
+  "ハウジング高橋","北海道ハウジング","ホームテック","ミサワホーム",
+  "米沢建設","リムハウス","ログスホーム","ロッキーハウス",
+  "ルクスホーム","ロゴスホーム","ジョイフルホーム","コクドホーム",
+  "セキスイハイム","住まいのクワザワ","鈴工","鈴木工務店",
+  "藤井工務店","ルクスホーム"
+];
+
+// 重複除去・ソート
+const HM_SORTED = [...new Set(HM_LIST)].sort((a,b) => a.localeCompare(b,'ja'));
+
+// HMグリッド生成
+const hmGrid = document.getElementById('hm-grid');
+hmGrid.innerHTML = HM_SORTED.map((name,i) =>
+  `<div class="hm-item">
+    <input type="checkbox" name="hm" id="hm${i}" value="${name}">
+    <label class="hm-label" for="hm${i}">${name}</label>
+  </div>`
+).join('');
+
+// ===== 分岐ロジック =====
+function setup() {
+  // Q1 紹介
+  document.querySelectorAll('input[name=source]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('sub-ref').classList.toggle('show', r.value === 'ご紹介' && r.checked);
+    });
+  });
+
+  // Q3 住まい
+  document.querySelectorAll('input[name=current]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('sub-owned').classList.toggle('show', r.value === '持ち家');
+      document.getElementById('sub-rent').classList.toggle('show', r.value === '賃貸');
+    });
+  });
+
+  // Q4 建物種別（サブフィールドはHTML内でinline配置済み）
+  document.querySelectorAll('input[name=btype]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('sub-new').classList.toggle('show', r.value === '新築');
+      document.getElementById('sub-reform').classList.toggle('show', r.value === 'リフォーム');
+      document.getElementById('q5-wrap').style.display = r.value === '新築' ? 'block' : 'none';
+    });
+  });
+
+  // Q4 新築のその他
+  document.getElementById('nt-other').addEventListener('change', function() {
+    const el = document.getElementById('sub-nt-other');
+    el.style.display = this.checked ? 'block' : 'none';
+  });
+
+  // Q5 土地（サブフィールドはHTML内でinline配置済み）
+  document.querySelectorAll('input[name=land]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('sub-land-have').classList.toggle('show', r.value === '所有している土地がある');
+      document.getElementById('sub-land-find').classList.toggle('show', r.value === '土地を探している');
+    });
+  });
+
+  // Q8 他社
+  document.querySelectorAll('input[name=hm-status]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('hm-list').style.display = r.value === 'あり' ? 'block' : 'none';
+    });
+  });
+}
+
+setup();
+setupAutoKana('last-name', 'last-kana');
+setupAutoKana('first-name', 'first-kana');
+
+// ===== 月払い計算 =====
+function calcLoan() {
+  const total = parseFloat(document.getElementById('budget-total').value) || 0;
+  const self  = parseFloat(document.getElementById('budget-self').value)  || 0;
+  const years = parseInt(document.getElementById('budget-years').value) || 0;
+  const res   = document.getElementById('loan-result');
+
+  if (!total || !years) { res.classList.remove('show'); return; }
+
+  const loan = Math.max(0, total - self);
+  const r = 0.0103 / 12;
+  const n = years * 12;
+  let monthly = 0;
+  if (r > 0 && n > 0) {
+    monthly = loan * 10000 * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+  }
+
+  document.getElementById('loan-num').textContent = Math.round(monthly).toLocaleString() + ' 円';
+  document.getElementById('loan-sub').textContent = `借入額：${loan.toLocaleString()} 万円`;
+  res.classList.add('show');
+}
+
+// ===== ステップ制御 =====
+let currentStep = 1;
+
+function updateProgress(step) {
+  const w = step / 6 * 100;
+  document.getElementById('prog').style.width = w + '%';
+  for (let i = 1; i <= 6; i++) {
+    const dot = document.getElementById(`sd${i}`);
+    const line = document.getElementById(`sl${i}`);
+    if (!dot) continue;
+    dot.classList.remove('active','done');
+    if (i < step)  { dot.classList.add('done'); dot.textContent = '✓'; }
+    if (i === step){ dot.classList.add('active'); dot.textContent = i; }
+    if (i > step)  { dot.textContent = i; }
+    if (line) line.classList.toggle('done', i < step);
+  }
+}
+
+function showSection(n) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`sec${n}`).classList.add('active');
+  currentStep = n;
+  updateProgress(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function next(from) {
+  if (!validate(from)) return;
+  showSection(from + 1);
+}
+
+function back(from) {
+  showSection(from - 1);
+}
+
+function validate(step) {
+  if (adminMode) return true;
+  const errEl = document.getElementById(`err${step}`);
+  let ok = true;
+
+  if (step === 1) {
+    const src = document.querySelector('input[name=source]:checked');
+    if (!src) ok = false;
+  }
+  if (step === 2) {
+    const adult = document.getElementById('fam-adult').value;
+    const cur = document.querySelector('input[name=current]:checked');
+    if (!adult || !cur) ok = false;
+  }
+  if (step === 3) {
+    const bt = document.querySelector('input[name=btype]:checked');
+    if (!bt) ok = false;
+  }
+  if (step === 4) {
+    const tot = document.getElementById('budget-total').value;
+    if (!tot) ok = false;
+  }
+  if (step === 5) {
+    // 検討状況は任意なのでバリデーションなし
+    ok = true;
+  }
+  if (step === 6) {
+    const ln = document.getElementById('last-name').value.trim();
+    const fn = document.getElementById('first-name').value.trim();
+    const ag = document.getElementById('age').value;
+    const zip = document.getElementById('zip').value.trim();
+    const ad1 = document.getElementById('address1').value.trim();
+    const tel = document.getElementById('tel').value.trim();
+    const em  = document.getElementById('email').value.trim();
+    if (!ln || !fn || !ag || !zip || !ad1 || !tel || !em) ok = false;
+  }
+
+  if (!ok) {
+    errEl.classList.add('show');
+    const sec = document.getElementById(`sec${step}`);
+    sec.classList.add('shake');
+    setTimeout(() => sec.classList.remove('shake'), 400);
+  } else {
+    errEl.classList.remove('show');
+  }
+  return ok;
+}
+
+// ===== 送信 =====
+async function doSubmit() {
+  if (!validate(6)) return;
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+
+  const hmChecked = [...document.querySelectorAll('input[name=hm]:checked')].map(x => x.value).join('、');
+  const newTypes  = [...document.querySelectorAll('input[name=newtype]:checked')].map(x => x.value).join('、');
+  const rfTypes   = [...document.querySelectorAll('input[name=reformtype]:checked')].map(x => x.value).join('、');
+
+  const payload = {
+    date:         new Date().toISOString().slice(0,10),
+    source:       document.querySelector('input[name=source]:checked')?.value || '',
+    refName:      document.getElementById('ref-name').value,
+    famAdult:     document.getElementById('fam-adult').value,
+    famChild:     document.getElementById('fam-child').value,
+    famPet:       document.getElementById('fam-pet').value,
+    currentHome:  document.querySelector('input[name=current]:checked')?.value || '',
+    ownedAge:     document.getElementById('owned-age').value,
+    ownedLoan:    document.getElementById('owned-loan').value,
+    rentYears:    document.getElementById('rent-years').value,
+    rentFee:      document.getElementById('rent-fee').value,
+    buildType:    document.querySelector('input[name=btype]:checked')?.value || '',
+    newTypes:     newTypes,
+    reformTypes:  rfTypes,
+    landStatus:   document.querySelector('input[name=land]:checked')?.value || '',
+    landLocation: document.getElementById('land-location').value,
+    landArea:     document.getElementById('land-area').value,
+    budgetTotal:  document.getElementById('budget-total').value,
+    budgetYears:  document.getElementById('budget-years').value,
+    budgetSelf:   document.getElementById('budget-self').value,
+    loanMonthly:  document.getElementById('loan-num').textContent,
+    desiredTime:  document.getElementById('desired-time').value,
+    hmStatus:     document.querySelector('input[name=hm-status]:checked')?.value || '',
+    hmList:       hmChecked,
+    hmOther:      document.getElementById('hm-other').value,
+    lastName:     document.getElementById('last-name').value,
+    firstName:    document.getElementById('first-name').value,
+    lastKana:     document.getElementById('last-kana').value,
+    firstKana:    document.getElementById('first-kana').value,
+    age:          document.getElementById('age').value,
+    zip:          document.getElementById('zip').value,
+    pref:         document.getElementById('pref').value,
+    address1:     document.getElementById('address1').value,
+    address2:     document.getElementById('address2').value,
+    tel:          document.getElementById('tel').value,
+    email:        document.getElementById('email').value,
+    industry:     document.getElementById('industry').value,
+    income:       document.querySelector('input[name=income]:checked')?.value || '',
+    message:      document.getElementById('message').value,
+  };
+
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('step-nav').style.display = 'none';
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('done-wrap').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) {
+    document.getElementById('err5').textContent = '送信に失敗しました。時間をおいて再度お試しください。';
+    document.getElementById('err5').classList.add('show');
+    btn.disabled = false;
+    btn.textContent = '送信する ✓';
+  }
+}
+</script>
+</body>
+</html>
