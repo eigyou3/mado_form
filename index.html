@@ -740,8 +740,13 @@ body {
 
     <!-- Q14 業種 -->
     <div class="field">
-      <span class="field-label">Q14. 業種（差し支えない範囲で）</span>
-      <input type="text" id="industry" placeholder="例：会社員、自営業、医療関係など">
+      <span class="field-label">Q14. 業種</span>
+      <div class="choice-grid">
+        <div class="choice-item"><input type="radio" name="industry" id="ind1" value="会社員"><label class="choice-label" for="ind1"><span class="choice-dot"></span>会社員</label></div>
+        <div class="choice-item"><input type="radio" name="industry" id="ind2" value="公務員"><label class="choice-label" for="ind2"><span class="choice-dot"></span>公務員</label></div>
+        <div class="choice-item"><input type="radio" name="industry" id="ind3" value="自営業"><label class="choice-label" for="ind3"><span class="choice-dot"></span>自営業</label></div>
+        <div class="choice-item"><input type="radio" name="industry" id="ind4" value="医療関係"><label class="choice-label" for="ind4"><span class="choice-dot"></span>医療関係</label></div>
+      </div>
     </div>
 
     <!-- Q15 世帯年収 -->
@@ -815,7 +820,7 @@ const HM_LIST = [
   "創樹","高嶋建業","高組","土屋ホーム",
   "D+","道北振興","東成建設","東洋AP",
   "ハウジング高橋","北海道ハウジング","ホームテック","ミサワホーム",
-  "米沢建設","リムハウス","ログスホーム","ロッキーハウス",
+  "米沢建設","リムハウス","ロッキーハウス",
   "ルクスホーム","ロゴスホーム","ジョイフルホーム","コクドホーム",
   "セキスイハイム","住まいのクワザワ","鈴工","鈴木工務店",
   "藤井工務店","ルクスホーム"
